@@ -1,0 +1,43 @@
+parameters:
+    stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    # Charge automatiquement les services dans src/
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Définition explicite des interfaces pour l'autowiring
+    App\Service\ProductServiceInterface:
+        class: App\Service\Implementation\ProductServiceImpl
+
+    App\Service\CategoryServiceInterface:
+        class: App\Service\Implementation\CategoryServiceImpl
+
+    App\Service\OrderServiceInterface:
+        class: App\Service\Implementation\OrderServiceImpl
+
+    App\Service\UserServiceInterface:
+        class: App\Service\Implementation\UserServiceImpl
+
+    App\Service\PaymentServiceInterface:
+        class: App\Service\Implementation\PaymentServiceImpl
+        arguments:
+            $stripeSecretKey: '%stripe.secret_key%'
+
+           
+    App\Service\Implementation\NotificationServiceImpl:
+        arguments:
+            $adminEmail: '%env(ADMIN_EMAIL)%'
+
+    
+    App\Service\NotificationServiceInterface:
+        alias: App\Service\Implementation\NotificationServiceImpl
